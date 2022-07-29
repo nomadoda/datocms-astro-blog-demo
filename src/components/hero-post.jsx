@@ -9,7 +9,7 @@ export default function HeroPost({
   excerpt,
   author,
   slug,
-  preview
+  preview,
 }) {
   const hrefLink = preview ? `/preview/posts/${slug}` : `/posts/${slug}`;
   return (

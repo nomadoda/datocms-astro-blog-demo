@@ -1,0 +1,5 @@
+{
+  "astroSortOrder": "markup | styles",
+  "astroAllowShorthand": false,
+  "trailingComma": "es5"
+}

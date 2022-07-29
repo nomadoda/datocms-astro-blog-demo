@@ -8,7 +8,9 @@ export default function PostBody({ content }) {
           data={content}
           renderBlock={({ record }) => {
             if (record.__typename === "ImageBlockRecord") {
-              return <Image lazyLoad={false} data={record.image.responsiveImage} />;
+              return (
+                <Image lazyLoad={false} data={record.image.responsiveImage} />
+              );
             }
 
             return (
