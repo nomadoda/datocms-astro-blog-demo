@@ -1,0 +1,107 @@
+---
+import gql from "graphql-tag";
+import { Container } from "../components/container";
+import { Header } from "../components/header";
+import Layout from "../layouts/Layout.astro";
+import { request } from "../lib/datocms";
+import { metaTagsFragment, responsiveImageFragment } from "../lib/fragments";
+
+const { slug = "" } = Astro.params;
+
+const query = gql`
+  query PageBySlug($slug: String) {
+    page(filter: { slug: { eq: $slug } }) {
+      id
+      title
+      slug
+      blocks {
+        __typename
+        ... on LatestPostsBlockRecord {
+          id
+          title
+          linkLabel
+        }
+        ... on LatestArtworksBlockRecord {
+          id
+          title
+          linkLabel
+        }
+        ... on PostsBlockRecord {
+          id
+          title
+        }
+        ... on ArtworksBlockRecord {
+          id
+          title
+        }
+      }
+      seo: _seoMetaTags {
+        ...metaTagsFragment
+      }
+    }
+    site: _site {
+      favicon: faviconMetaTags {
+        ...metaTagsFragment
+      }
+    }
+    global {
+      logo {
+        responsiveImage(imgixParams: { fm: jpg, fit: crop, w: 2000, h: 1000 }) {
+          ...responsiveImageFragment
+        }
+      }
+      postsPage {
+        slug
+      }
+      artworksPage {
+        slug
+      }
+    }
+    allPosts(orderBy: createdAt_DESC, first: 20) {
+      title
+      slug
+      excerpt
+      image {
+        responsiveImage(imgixParams: { fm: jpg, fit: crop, w: 2000, h: 1000 }) {
+          ...responsiveImageFragment
+        }
+      }
+    }
+    allArtworks(orderBy: createdAt_DESC, first: 20) {
+      title
+      slug
+      excerpt
+      image {
+        responsiveImage(imgixParams: { fm: jpg, fit: crop, w: 2000, h: 1000 }) {
+          ...responsiveImageFragment
+        }
+      }
+    }
+  }
+
+  ${metaTagsFragment}
+  ${responsiveImageFragment}
+`;
+
+const { page, allPosts, allArtworks, site, global } = await request(query, {
+  variables: { slug },
+});
+
+export async function getStaticPaths() {
+  const { allPages: pages } = await request<{ allPages: any[] }>(gql`
+    {
+      allPages(first: 20) {
+        slug
+      }
+    }
+  `);
+  return pages.map((page) => ({ params: { slug: page.slug || undefined } }));
+}
+---
+
+<Layout seo={page.seo} favicon={site.favicon}>
+  <Header logo={global.logo} />
+  <Container>
+    <h1>Hello world!</h1>
+  </Container>
+</Layout>

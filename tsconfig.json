@@ -14,6 +14,7 @@
     // Tell TypeScript where your build output is
     "outDir": "./dist",
     // Use explicit type imports and exports whenever possible
-    "importsNotUsedAsValues": "error"
+    "importsNotUsedAsValues": "error",
+    "strict": true
   }
 }
