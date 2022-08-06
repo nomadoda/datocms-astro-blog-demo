@@ -20,5 +20,8 @@ export const request = async <T>(
     body: JSON.stringify(graphqlRequest),
   });
   const parsedResponse = await response.json();
+  if (parsedResponse.errors) {
+    throw parsedResponse.errors;
+  }
   return parsedResponse.data;
 };

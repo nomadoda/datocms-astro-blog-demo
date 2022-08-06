@@ -1,10 +1,72 @@
 ---
 import gql from "graphql-tag";
-import { Container } from "../components/container";
+import ArtworksBlock, {
+  fragment as ArtworksBlockFragment,
+} from "../components/blocks/artworks-block.astro";
+import LatestArtworksBlock, {
+  fragment as LatestArtworksBlockFragment,
+} from "../components/blocks/latest-artworks-block.astro";
+import LatestPostsBlock, {
+  fragment as LatestPostsBlockFragment,
+} from "../components/blocks/latest-posts-block.astro";
+import PostsBlock, {
+  fragment as PostsBlockFragment,
+} from "../components/blocks/posts-block.astro";
 import { Header } from "../components/header";
-import Layout from "../layouts/Layout.astro";
-import { request } from "../lib/datocms";
-import { metaTagsFragment, responsiveImageFragment } from "../lib/fragments";
+import Layout from "../layouts/layout.astro";
+import { request } from "../lib/datocms/request";
+import type {
+  ArtworkRecord,
+  GlobalRecord,
+  PageRecord,
+  PostRecord,
+  Site,
+} from "../lib/datocms/types";
+import { metaTagFragment, responsiveImageFragment } from "../lib/fragments";
+
+export async function getStaticPaths() {
+  const {
+    allPages: pages,
+    global: { postsPage, artworksPage },
+    allPosts: posts,
+    allArtworks: artworks,
+  } = await request<{
+    allPages: PageRecord[];
+    global: GlobalRecord;
+    allPosts: PostRecord[];
+    allArtworks: ArtworkRecord[];
+  }>(gql`
+    {
+      allPages(first: 20) {
+        slug
+      }
+      allPosts(first: 20) {
+        slug
+      }
+      allArtworks(first: 20) {
+        slug
+      }
+      global {
+        postsPage {
+          slug
+        }
+        artworksPage {
+          slug
+        }
+      }
+    }
+  `);
+  const pagePaths = pages.map((page) => ({
+    params: { slug: page.slug || undefined },
+  }));
+  const postPaths = posts.map((post) => ({
+    params: { slug: `${postsPage.slug}/${post.slug}` || undefined },
+  }));
+  const artworkPaths = artworks.map((artwork) => ({
+    params: { slug: `${artworksPage.slug}/${artwork.slug}` || undefined },
+  }));
+  return [...pagePaths, ...postPaths, ...artworkPaths];
+}
 
 const { slug = "" } = Astro.params;
 
@@ -17,91 +79,67 @@ const query = gql`
       blocks {
         __typename
         ... on LatestPostsBlockRecord {
-          id
-          title
-          linkLabel
+          ...LatestPostsBlock
         }
         ... on LatestArtworksBlockRecord {
-          id
-          title
-          linkLabel
+          ...LatestArtworksBlock
         }
         ... on PostsBlockRecord {
-          id
-          title
+          ...PostsBlock
         }
         ... on ArtworksBlockRecord {
-          id
-          title
+          ...ArtworksBlock
         }
       }
-      seo: _seoMetaTags {
-        ...metaTagsFragment
+      _seoMetaTags {
+        ...MetaTag
       }
     }
     site: _site {
-      favicon: faviconMetaTags {
-        ...metaTagsFragment
+      faviconMetaTags {
+        ...MetaTag
       }
     }
     global {
       logo {
-        responsiveImage(imgixParams: { fm: jpg, fit: crop, w: 2000, h: 1000 }) {
-          ...responsiveImageFragment
-        }
-      }
-      postsPage {
-        slug
-      }
-      artworksPage {
-        slug
-      }
-    }
-    allPosts(orderBy: createdAt_DESC, first: 20) {
-      title
-      slug
-      excerpt
-      image {
-        responsiveImage(imgixParams: { fm: jpg, fit: crop, w: 2000, h: 1000 }) {
-          ...responsiveImageFragment
-        }
-      }
-    }
-    allArtworks(orderBy: createdAt_DESC, first: 20) {
-      title
-      slug
-      excerpt
-      image {
-        responsiveImage(imgixParams: { fm: jpg, fit: crop, w: 2000, h: 1000 }) {
-          ...responsiveImageFragment
+        responsiveImage(imgixParams: { fit: crop, w: 2000, h: 1000 }) {
+          ...ResponsiveImage
         }
       }
     }
   }
 
-  ${metaTagsFragment}
+  ${metaTagFragment}
   ${responsiveImageFragment}
+  ${ArtworksBlockFragment}
+  ${PostsBlockFragment}
+  ${LatestPostsBlockFragment}
+  ${LatestArtworksBlockFragment}
 `;
 
-const { page, allPosts, allArtworks, site, global } = await request(query, {
+const { page, site, global } = await request<{
+  page: PageRecord;
+  global: GlobalRecord;
+  site: Site;
+}>(query, {
   variables: { slug },
 });
-
-export async function getStaticPaths() {
-  const { allPages: pages } = await request<{ allPages: any[] }>(gql`
-    {
-      allPages(first: 20) {
-        slug
-      }
-    }
-  `);
-  return pages.map((page) => ({ params: { slug: page.slug || undefined } }));
-}
 ---
 
-<Layout seo={page.seo} favicon={site.favicon}>
+<Layout seo={page._seoMetaTags} favicon={site.faviconMetaTags}>
   <Header logo={global.logo} />
-  <Container>
-    <h1>Hello world!</h1>
-  </Container>
+  {page.blocks.map(({ __typename, ...block }) => {
+    switch (__typename) {
+      case "PostsBlockRecord":
+        return <PostsBlock {...block} />;
+      case "ArtworksBlockRecord":
+        return <ArtworksBlock {...block} />;
+      case "LatestPostsBlockRecord":
+        return <LatestPostsBlock {...block} />;
+      case "LatestArtworksBlockRecord":
+        return <LatestArtworksBlock {...block} />;
+      default:
+        return null;
+    }
+  })}
 </Layout>

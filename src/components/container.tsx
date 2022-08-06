@@ -1,5 +1,9 @@
 import type { FC, PropsWithChildren } from "react";
 
-export const Container: FC<PropsWithChildren> = ({ children }) => {
-  return <div className="container mx-auto px-5">{children}</div>;
+interface ContainerProps
+  extends React.HTMLAttributes<HTMLElement>,
+    PropsWithChildren {}
+
+export const Container: FC<ContainerProps> = ({ children }) => {
+  return <div className="container">{children}</div>;
 };

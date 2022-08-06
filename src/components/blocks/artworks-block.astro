@@ -1,0 +1,64 @@
+---
+import gql from "graphql-tag";
+import { request } from "../../lib/datocms/request";
+import type {
+  ArtworkRecord,
+  ArtworksBlockRecord,
+  GlobalRecord,
+} from "../../lib/datocms/types";
+import { ArtworkCard } from "../cards/artwork-card";
+import { Container } from "../container";
+import { PageBlock } from "../page-block";
+
+export const fragment = gql`
+  fragment ArtworksBlock on ArtworksBlockRecord {
+    id
+    title
+  }
+`;
+
+const query = gql`
+  query ArtworksBlock {
+    global {
+      artworksPage {
+        slug
+      }
+    }
+    allArtworks(orderBy: createdAt_DESC, first: 20) {
+      ...ArtworkCard
+    }
+  }
+
+  ${ArtworkCard.fragment}
+`;
+
+interface ArtworksBlockProps extends ArtworksBlockRecord {}
+
+const { title } = Astro.props as ArtworksBlockProps;
+
+const {
+  allArtworks: artworks,
+  global: {
+    artworksPage: { slug: artworksPageSlug },
+  },
+} = await request<{ allArtworks: ArtworkRecord[]; global: GlobalRecord }>(
+  query
+);
+
+console.log(artworksPageSlug);
+---
+
+<PageBlock className="bg-pink-100">
+  <Container>
+    <h2 class="mb-8 text-3xl text-center">{title}</h2>
+    <ul class="-m-4 flex flex-wrap">
+      {artworks.map((artwork) => (
+        <li class="w-full p-4 sm:w-1/2 lg:w-1/3">
+          <a href={`/${artworksPageSlug}/${artwork.slug}`}>
+            <ArtworkCard artwork={artwork} />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </Container>
+</PageBlock>

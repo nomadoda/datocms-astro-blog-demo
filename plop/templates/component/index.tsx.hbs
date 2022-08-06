@@ -1,0 +1,14 @@
+import cn from 'classnames';
+import type { FC, PropsWithChildren } from 'react';
+
+interface {{ pascalCase name }}Props
+  extends React.HTMLAttributes<HTMLElement>,
+    PropsWithChildren {}
+
+export const {{ pascalCase name }}: FC<{{ pascalCase name }}Props> = ({ children, className, ...props }) => {
+  return (
+    <div className={cn(className, "")} {...props}>
+      <p>New component!</p>
+    </div>
+  );
+};
