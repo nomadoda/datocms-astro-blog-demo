@@ -25,7 +25,7 @@ export const fragment = gql`
           id
           image {
             responsiveImage(
-              imgixParams: { fit: crop, w: 300, h: 300, auto: format }
+              imgixParams: { fit: crop, w: 800, h: 400, auto: format }
             ) {
               ...ResponsiveImage
             }
@@ -52,8 +52,14 @@ const image = post.image.responsiveImage!;
 
 <Layout seo={post._seoMetaTags}>
   <Container>
-    <h1 class="text-2xl">{post.title}</h1>
-    <Image lazyLoad={false} data={image} />
-    <Body body={post.body} />
+    <article>
+      <h1 class="mx-auto max-w-screen-md mb-8 text-4xl text-center">
+        {post.title}
+      </h1>
+      <Image className="mb-8" lazyLoad={false} data={image} />
+      <div class="mx-auto max-w-screen-sm">
+        <Body body={post.body} />
+      </div>
+    </article>
   </Container>
 </Layout>
