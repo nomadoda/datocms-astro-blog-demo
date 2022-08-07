@@ -3,9 +3,9 @@ import gql from "graphql-tag";
 import { Image } from "react-datocms";
 import { Body } from "../components/body";
 import { Container } from "../components/container";
-import Layout from "../layouts/layout.astro";
 import type { ArtworkRecord } from "../lib/datocms/types";
 import { metaTagFragment, responsiveImageFragment } from "../lib/fragments";
+import Layout from "./layout.astro";
 
 export const fragment = gql`
   fragment Artwork on ArtworkRecord {

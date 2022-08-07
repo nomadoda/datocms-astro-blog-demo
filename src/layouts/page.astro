@@ -12,9 +12,9 @@ import LatestPostsBlock, {
 import PostsBlock, {
   fragment as PostsBlockFragment,
 } from "../components/blocks/posts-block.astro";
-import Layout from "../layouts/layout.astro";
 import type { PageRecord } from "../lib/datocms/types";
 import { metaTagFragment } from "../lib/fragments";
+import Layout from "./layout.astro";
 
 export const fragment = gql`
   fragment Page on PageRecord {
