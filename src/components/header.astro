@@ -1,0 +1,41 @@
+---
+import gql from "graphql-tag";
+import { Image } from "react-datocms";
+import { request } from "../lib/datocms/request";
+import type { GlobalRecord } from "../lib/datocms/types";
+import { responsiveImageFragment } from "../lib/fragments";
+import { Container } from "./container";
+
+const GLOBAL_QUERY = gql`
+  query Header {
+    global {
+      logo {
+        responsiveImage(imgixParams: { fit: crop, w: 2000, h: 1000 }) {
+          ...ResponsiveImage
+        }
+      }
+    }
+  }
+
+  ${responsiveImageFragment}
+`;
+
+const { global } = await request<{
+  global: GlobalRecord;
+}>(GLOBAL_QUERY).catch((error) => {
+  console.log("ERROR");
+  throw error;
+});
+
+const image = global.logo.responsiveImage!;
+---
+
+<header class="bg-cyan flex items-center justify-center px-5 py-16">
+  <Container>
+    <h1>
+      <a class="block mx-auto max-w-screen-sm" href="/">
+        <Image lazyLoad={false} data={image} />
+      </a>
+    </h1>
+  </Container>
+</header>

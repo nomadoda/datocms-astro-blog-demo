@@ -631,9 +631,9 @@ export type GlobalSeoField = {
   twitterAccount?: Maybe<Scalars['String']>;
 };
 
-/** Block of type Image block (image_block) */
-export type ImageBlockRecord = RecordInterface & {
-  __typename?: 'ImageBlockRecord';
+/** Block of type Image (image) */
+export type ImageRecord = RecordInterface & {
+  __typename?: 'ImageRecord';
   _createdAt: Scalars['DateTime'];
   _firstPublishedAt?: Maybe<Scalars['DateTime']>;
   _isValid: Scalars['BooleanType'];
@@ -652,8 +652,8 @@ export type ImageBlockRecord = RecordInterface & {
 };
 
 
-/** Block of type Image block (image_block) */
-export type ImageBlockRecord_SeoMetaTagsArgs = {
+/** Block of type Image (image) */
+export type ImageRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -2239,9 +2239,11 @@ export type PageRecordExcerptArgs = {
   markdown?: InputMaybe<Scalars['Boolean']>;
 };
 
+export type PostModelBodyBlocksField = ImageRecord | VideoRecord;
+
 export type PostModelBodyField = {
   __typename?: 'PostModelBodyField';
-  blocks: Array<ImageBlockRecord>;
+  blocks: Array<PostModelBodyBlocksField>;
   links: Array<Scalars['String']>;
   value: Scalars['JsonField'];
 };
@@ -3100,11 +3102,48 @@ export type UploadWidthFilter = {
   neq?: InputMaybe<Scalars['IntType']>;
 };
 
+export type VideoField = {
+  __typename?: 'VideoField';
+  height: Scalars['IntType'];
+  provider: Scalars['String'];
+  providerUid: Scalars['String'];
+  thumbnailUrl: Scalars['String'];
+  title: Scalars['String'];
+  url: Scalars['String'];
+  width: Scalars['IntType'];
+};
+
 export enum VideoMp4Res {
   High = 'high',
   Low = 'low',
   Medium = 'medium'
 }
+
+/** Block of type Video (video) */
+export type VideoRecord = RecordInterface & {
+  __typename?: 'VideoRecord';
+  _createdAt: Scalars['DateTime'];
+  _firstPublishedAt?: Maybe<Scalars['DateTime']>;
+  _isValid: Scalars['BooleanType'];
+  _modelApiKey: Scalars['String'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']>;
+  _publishedAt?: Maybe<Scalars['DateTime']>;
+  /** SEO meta tags */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']>;
+  _updatedAt: Scalars['DateTime'];
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ItemId'];
+  updatedAt: Scalars['DateTime'];
+  video: VideoField;
+};
+
+
+/** Block of type Video (video) */
+export type VideoRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
 
 export type FocalPoint = {
   __typename?: 'focalPoint';

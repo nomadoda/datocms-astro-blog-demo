@@ -1,0 +1,59 @@
+---
+import gql from "graphql-tag";
+import { Image } from "react-datocms";
+import { Body } from "../components/body";
+import { Container } from "../components/container";
+import type { PostRecord } from "../lib/datocms/types";
+import { metaTagFragment, responsiveImageFragment } from "../lib/fragments";
+import Layout from "./layout.astro";
+
+export const fragment = gql`
+  fragment Post on PostRecord {
+    id
+    title
+    slug
+    image {
+      responsiveImage {
+        ...ResponsiveImage
+      }
+    }
+    body {
+      value
+      blocks {
+        __typename
+        ... on ImageRecord {
+          id
+          image {
+            responsiveImage(
+              imgixParams: { fit: crop, w: 300, h: 300, auto: format }
+            ) {
+              ...ResponsiveImage
+            }
+          }
+        }
+      }
+    }
+    _seoMetaTags {
+      ...MetaTag
+    }
+  }
+
+  ${metaTagFragment}
+  ${responsiveImageFragment}
+`;
+
+interface PostProps {
+  post: PostRecord;
+}
+
+const { post } = Astro.props as PostProps;
+const image = post.image.responsiveImage!;
+---
+
+<Layout seo={post._seoMetaTags}>
+  <Container>
+    <h1 class="text-2xl">{post.title}</h1>
+    <Image lazyLoad={false} data={image} />
+    <Body body={post.body} />
+  </Container>
+</Layout>

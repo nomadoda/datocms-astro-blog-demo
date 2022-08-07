@@ -1,13 +1,34 @@
 ---
+import gql from "graphql-tag";
+import Header from "../components/header.astro";
 import { SEO } from "../components/seo";
-import type { Tag } from "../lib/datocms/types";
+import { request } from "../lib/datocms/request";
+import type { Site, Tag } from "../lib/datocms/types";
+import { metaTagFragment } from "../lib/fragments";
 
 export interface Props {
   seo: Tag[];
-  favicon: Tag[];
 }
 
-const { seo, favicon } = Astro.props as Props;
+const { seo } = Astro.props as Props;
+
+const SITE_DATA_QUERY = gql`
+  query SiteData {
+    site: _site {
+      faviconMetaTags {
+        ...MetaTag
+      }
+    }
+  }
+
+  ${metaTagFragment}
+`;
+
+const {
+  site: { faviconMetaTags: favicon },
+} = await request<{
+  site: Site;
+}>(SITE_DATA_QUERY);
 ---
 
 <!DOCTYPE html>
@@ -19,6 +40,7 @@ const { seo, favicon } = Astro.props as Props;
   </head>
 
   <body>
+    <Header />
     <slot />
     <style>
       /* kaushan-script-regular - latin */

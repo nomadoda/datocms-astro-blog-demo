@@ -1,28 +1,14 @@
 ---
 import gql from "graphql-tag";
-import ArtworksBlock, {
-  fragment as ArtworksBlockFragment,
-} from "../components/blocks/artworks-block.astro";
-import LatestArtworksBlock, {
-  fragment as LatestArtworksBlockFragment,
-} from "../components/blocks/latest-artworks-block.astro";
-import LatestPostsBlock, {
-  fragment as LatestPostsBlockFragment,
-} from "../components/blocks/latest-posts-block.astro";
-import PostsBlock, {
-  fragment as PostsBlockFragment,
-} from "../components/blocks/posts-block.astro";
-import { Header } from "../components/header";
-import Layout from "../layouts/layout.astro";
+import Page,{ fragment as PageFragment } from "../layouts/page.astro";
+import Post,{ fragment as PostFragment } from "../layouts/post.astro";
 import { request } from "../lib/datocms/request";
 import type {
-  ArtworkRecord,
-  GlobalRecord,
-  PageRecord,
-  PostRecord,
-  Site,
+ArtworkRecord,
+GlobalRecord,
+PageRecord,
+PostRecord
 } from "../lib/datocms/types";
-import { metaTagFragment, responsiveImageFragment } from "../lib/fragments";
 
 export async function getStaticPaths() {
   const {
@@ -68,78 +54,94 @@ export async function getStaticPaths() {
   return [...pagePaths, ...postPaths, ...artworkPaths];
 }
 
-const { slug = "" } = Astro.params;
+interface PageParams {
+  slug?: string;
+}
 
-const query = gql`
-  query PageBySlug($slug: String) {
-    page(filter: { slug: { eq: $slug } }) {
-      id
-      title
-      slug
-      blocks {
-        __typename
-        ... on LatestPostsBlockRecord {
-          ...LatestPostsBlock
-        }
-        ... on LatestArtworksBlockRecord {
-          ...LatestArtworksBlock
-        }
-        ... on PostsBlockRecord {
-          ...PostsBlock
-        }
-        ... on ArtworksBlockRecord {
-          ...ArtworksBlock
-        }
-      }
-      _seoMetaTags {
-        ...MetaTag
-      }
-    }
-    site: _site {
-      faviconMetaTags {
-        ...MetaTag
-      }
-    }
+const { slug = "" } = Astro.params as PageParams;
+const slugParts = slug.split("/");
+
+const SITE_DATA_QUERY = gql`
+  query SiteData {
     global {
-      logo {
-        responsiveImage(imgixParams: { fit: crop, w: 2000, h: 1000 }) {
-          ...ResponsiveImage
-        }
+      postsPage {
+        slug
+      }
+      artworksPage {
+        slug
       }
     }
   }
-
-  ${metaTagFragment}
-  ${responsiveImageFragment}
-  ${ArtworksBlockFragment}
-  ${PostsBlockFragment}
-  ${LatestPostsBlockFragment}
-  ${LatestArtworksBlockFragment}
 `;
 
-const { page, site, global } = await request<{
-  page: PageRecord;
+const PAGE_QUERY = gql`
+  query PageBySlug($slug: String) {
+    page(filter: { slug: { eq: $slug } }) {
+      ...Page
+    }
+  }
+
+  ${PageFragment}
+`;
+
+const POST_QUERY = gql`
+  query PostBySlug($slug: String) {
+    post(filter: { slug: { eq: $slug } }) {
+      ...Post
+    }
+  }
+
+  ${PostFragment}
+`;
+
+const { global } = await request<{
   global: GlobalRecord;
-  site: Site;
-}>(query, {
+}>(SITE_DATA_QUERY, {
   variables: { slug },
 });
+
+const isSubpageOfRoute = (route: string) => {
+  return slugParts[0] === route && slugParts.length > 1;
+};
+
+const type = isSubpageOfRoute(global.postsPage.slug!)
+  ? "post"
+  : isSubpageOfRoute(global.artworksPage.slug!)
+  ? "artwork"
+  : "page";
+
+const promise = {
+  post: async () => {
+    const postSlug = slugParts[1];
+    const { post } = await request<{ post: PostRecord }>(POST_QUERY, {
+      variables: { slug: postSlug },
+    });
+    return post;
+  },
+  artwork: async () => {
+    const artworkSlug = slugParts[1];
+    const { artwork } = await request<{ artwork: ArtworkRecord }>(PAGE_QUERY, {
+      variables: { slug: artworkSlug },
+    });
+    return artwork;
+  },
+  page: () =>
+    request<{ page: PageRecord }>(PAGE_QUERY, {
+      variables: { slug },
+    }).then(({ page }) => page),
+}[type];
+
+const data = await promise();
 ---
 
-<Layout seo={page._seoMetaTags} favicon={site.faviconMetaTags}>
-  <Header logo={global.logo} />
-  {page.blocks.map(({ __typename, ...block }) => {
-    switch (__typename) {
-      case "PostsBlockRecord":
-        return <PostsBlock {...block} />;
-      case "ArtworksBlockRecord":
-        return <ArtworksBlock {...block} />;
-      case "LatestPostsBlockRecord":
-        return <LatestPostsBlock {...block} />;
-      case "LatestArtworksBlockRecord":
-        return <LatestArtworksBlock {...block} />;
-      default:
-        return null;
-    }
-  })}
-</Layout>
+<>
+  {
+    type === "post" ? (
+      <Post post={data} />
+    ) : type === "artwork" ? (
+      <></>
+    ) : (
+      <Page page={data} />
+    )
+  }
+</>
