@@ -3,12 +3,12 @@ import gql from "graphql-tag";
 import { Image } from "react-datocms";
 import { Body } from "../components/body";
 import { Container } from "../components/container";
-import type { PostRecord } from "../lib/datocms/types";
+import type { ArtworkRecord } from "../lib/datocms/types";
 import { metaTagFragment, responsiveImageFragment } from "../lib/fragments";
 import Layout from "./layout.astro";
 
 export const fragment = gql`
-  fragment Post on PostRecord {
+  fragment Artwork on ArtworkRecord {
     id
     title
     slug
@@ -42,24 +42,27 @@ export const fragment = gql`
   ${responsiveImageFragment}
 `;
 
-interface PostProps {
-  post: PostRecord;
+interface ArtworkProps {
+  artwork: ArtworkRecord;
 }
 
-const { post } = Astro.props as PostProps;
-const image = post.image.responsiveImage!;
+const { artwork } = Astro.props as ArtworkProps;
+console.log(artwork);
+const image = artwork.image.responsiveImage!;
 ---
 
-<Layout seo={post._seoMetaTags}>
+<Layout seo={artwork._seoMetaTags}>
   <Container>
     <article class="flex flex-col items-center">
       <h1 class="max-w-screen-md mb-8 text-4xl text-center">
-        {post.title}
+        {artwork.title}
       </h1>
       <Image className="mb-8" lazyLoad={false} data={image} />
-      <div class="max-w-screen-sm">
-        <Body body={post.body} />
-      </div>
+      {artwork.body ? (
+        <div class="max-w-screen-sm">
+          <Body body={artwork.body} />
+        </div>
+      ) : null}
     </article>
   </Container>
 </Layout>

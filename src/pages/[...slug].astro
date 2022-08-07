@@ -1,13 +1,14 @@
 ---
 import gql from "graphql-tag";
-import Page,{ fragment as PageFragment } from "../layouts/page.astro";
-import Post,{ fragment as PostFragment } from "../layouts/post.astro";
+import Artwork, { fragment as ArtworkFragment } from "../layouts/artwork.astro";
+import Page, { fragment as PageFragment } from "../layouts/page.astro";
+import Post, { fragment as PostFragment } from "../layouts/post.astro";
 import { request } from "../lib/datocms/request";
 import type {
-ArtworkRecord,
-GlobalRecord,
-PageRecord,
-PostRecord
+  ArtworkRecord,
+  GlobalRecord,
+  PageRecord,
+  PostRecord,
 } from "../lib/datocms/types";
 
 export async function getStaticPaths() {
@@ -94,6 +95,16 @@ const POST_QUERY = gql`
   ${PostFragment}
 `;
 
+const ARTWORK_QUERY = gql`
+  query ArtworkBySlug($slug: String) {
+    artwork(filter: { slug: { eq: $slug } }) {
+      ...Artwork
+    }
+  }
+
+  ${ArtworkFragment}
+`;
+
 const { global } = await request<{
   global: GlobalRecord;
 }>(SITE_DATA_QUERY, {
@@ -120,28 +131,31 @@ const promise = {
   },
   artwork: async () => {
     const artworkSlug = slugParts[1];
-    const { artwork } = await request<{ artwork: ArtworkRecord }>(PAGE_QUERY, {
-      variables: { slug: artworkSlug },
-    });
+    const { artwork } = await request<{ artwork: ArtworkRecord }>(
+      ARTWORK_QUERY,
+      {
+        variables: { slug: artworkSlug },
+      }
+    );
     return artwork;
   },
-  page: () =>
-    request<{ page: PageRecord }>(PAGE_QUERY, {
+  page: async () => {
+    const { page } = await request<{ page: PageRecord }>(PAGE_QUERY, {
       variables: { slug },
-    }).then(({ page }) => page),
+    });
+    return page;
+  },
 }[type];
 
 const data = await promise();
 ---
 
 <>
-  {
-    type === "post" ? (
-      <Post post={data} />
-    ) : type === "artwork" ? (
-      <></>
-    ) : (
-      <Page page={data} />
-    )
-  }
+  {type === "post" ? (
+    <Post post={data} />
+  ) : type === "artwork" ? (
+    <Artwork artwork={data} />
+  ) : (
+    <Page page={data} />
+  )}
 </>

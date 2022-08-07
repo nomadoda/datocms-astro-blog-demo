@@ -19,9 +19,9 @@ export const request = async <T>(
     },
     body: JSON.stringify(graphqlRequest),
   });
-  const parsedResponse = await response.json();
-  if (parsedResponse.errors) {
-    throw parsedResponse.errors;
+  const { data, errors } = await response.json();
+  if (errors || !data) {
+    throw errors || new Error("No data returned");
   }
-  return parsedResponse.data;
+  return data;
 };
