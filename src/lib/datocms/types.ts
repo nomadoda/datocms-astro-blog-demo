@@ -608,10 +608,12 @@ export type GlobalRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']>;
   _updatedAt: Scalars['DateTime'];
+  artworkBlocks: Array<LatestPostsBlockRecord>;
   artworksPage: PageRecord;
   createdAt: Scalars['DateTime'];
   id: Scalars['ItemId'];
   logo: AltTitleFileField;
+  postBlocks: Array<LatestArtworksBlockRecord>;
   postsPage: PageRecord;
   updatedAt: Scalars['DateTime'];
 };

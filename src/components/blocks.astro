@@ -1,0 +1,27 @@
+---
+import ArtworksBlock from "./blocks/artworks-block.astro";
+import LatestArtworksBlock from "./blocks/latest-artworks-block.astro";
+import LatestPostsBlock from "./blocks/latest-posts-block.astro";
+import PostsBlock from "./blocks/posts-block.astro";
+
+interface BlocksProps {
+  blocks: any[];
+}
+
+const { blocks } = Astro.props as BlocksProps;
+---
+
+{blocks.map(({ __typename, ...block }) => {
+  switch (__typename) {
+    case "PostsBlockRecord":
+      return <PostsBlock {...block} />;
+    case "ArtworksBlockRecord":
+      return <ArtworksBlock {...block} />;
+    case "LatestPostsBlockRecord":
+      return <LatestPostsBlock {...block} />;
+    case "LatestArtworksBlockRecord":
+      return <LatestArtworksBlock {...block} />;
+    default:
+      return null;
+  }
+})}

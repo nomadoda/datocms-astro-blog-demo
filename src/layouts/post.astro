@@ -1,9 +1,12 @@
 ---
 import gql from "graphql-tag";
 import { Image } from "react-datocms";
+import Blocks from "../components/blocks.astro";
+import { fragment as LatestArtworksBlockFragment } from "../components/blocks/latest-artworks-block.astro";
 import { Body } from "../components/body";
 import { Container } from "../components/container";
-import type { PostRecord } from "../lib/datocms/types";
+import { request } from "../lib/datocms/request";
+import type { GlobalRecord, PostRecord } from "../lib/datocms/types";
 import {
   metaTagFragment,
   responsiveImageFragment,
@@ -48,6 +51,22 @@ export const fragment = gql`
   ${videoFragment}
 `;
 
+const query = gql`
+  query Post {
+    global {
+      postBlocks {
+        __typename
+        ...LatestArtworksBlock
+      }
+    }
+  }
+  ${LatestArtworksBlockFragment}
+`;
+
+const {
+  global: { postBlocks },
+} = await request<{ global: GlobalRecord }>(query);
+
 interface PostProps {
   post: PostRecord;
 }
@@ -59,7 +78,7 @@ const body = post.body as any;
 
 <Layout seo={post._seoMetaTags}>
   <Container>
-    <article class="flex flex-col items-center">
+    <article class="my-16 flex flex-col items-center">
       <h1 class="max-w-screen-md mb-8 text-4xl text-center">
         {post.title}
       </h1>
@@ -74,4 +93,5 @@ const body = post.body as any;
       </div>
     </article>
   </Container>
+  <Blocks blocks={postBlocks} />
 </Layout>

@@ -1,17 +1,10 @@
 ---
 import gql from "graphql-tag";
-import ArtworksBlock, {
-  fragment as ArtworksBlockFragment,
-} from "../components/blocks/artworks-block.astro";
-import LatestArtworksBlock, {
-  fragment as LatestArtworksBlockFragment,
-} from "../components/blocks/latest-artworks-block.astro";
-import LatestPostsBlock, {
-  fragment as LatestPostsBlockFragment,
-} from "../components/blocks/latest-posts-block.astro";
-import PostsBlock, {
-  fragment as PostsBlockFragment,
-} from "../components/blocks/posts-block.astro";
+import Blocks from "../components/blocks.astro";
+import { fragment as ArtworksBlockFragment } from "../components/blocks/artworks-block.astro";
+import { fragment as LatestArtworksBlockFragment } from "../components/blocks/latest-artworks-block.astro";
+import { fragment as LatestPostsBlockFragment } from "../components/blocks/latest-posts-block.astro";
+import { fragment as PostsBlockFragment } from "../components/blocks/posts-block.astro";
 import type { PageRecord } from "../lib/datocms/types";
 import { metaTagFragment } from "../lib/fragments";
 import Layout from "./layout.astro";
@@ -56,18 +49,5 @@ const { page } = Astro.props as PageProps;
 ---
 
 <Layout seo={page._seoMetaTags}>
-  {page.blocks.map(({ __typename, ...block }) => {
-    switch (__typename) {
-      case "PostsBlockRecord":
-        return <PostsBlock {...block} />;
-      case "ArtworksBlockRecord":
-        return <ArtworksBlock {...block} />;
-      case "LatestPostsBlockRecord":
-        return <LatestPostsBlock {...block} />;
-      case "LatestArtworksBlockRecord":
-        return <LatestArtworksBlock {...block} />;
-      default:
-        return null;
-    }
-  })}
+  <Blocks blocks={page.blocks} />
 </Layout>

@@ -1,9 +1,12 @@
 ---
 import gql from "graphql-tag";
 import { Image } from "react-datocms";
+import Blocks from "../components/blocks.astro";
+import { fragment as LatestPostsBlockFragment } from "../components/blocks/latest-posts-block.astro";
 import { Body } from "../components/body";
 import { Container } from "../components/container";
-import type { ArtworkRecord } from "../lib/datocms/types";
+import { request } from "../lib/datocms/request";
+import type { ArtworkRecord, GlobalRecord } from "../lib/datocms/types";
 import {
   metaTagFragment,
   responsiveImageFragment,
@@ -48,6 +51,22 @@ export const fragment = gql`
   ${videoFragment}
 `;
 
+const query = gql`
+  query Artwork {
+    global {
+      artworkBlocks {
+        __typename
+        ...LatestPostsBlock
+      }
+    }
+  }
+  ${LatestPostsBlockFragment}
+`;
+
+const {
+  global: { artworkBlocks },
+} = await request<{ global: GlobalRecord }>(query);
+
 interface ArtworkProps {
   artwork: ArtworkRecord;
 }
@@ -76,4 +95,5 @@ const body = artwork.body as any;
       ) : null}
     </article>
   </Container>
+  <Blocks blocks={artworkBlocks} />
 </Layout>
