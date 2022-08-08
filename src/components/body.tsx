@@ -97,9 +97,12 @@ export const Body: FC<BodyProps> = ({
         switch (record.__typename) {
           case "MediaAssetRecord":
             return record.media.responsiveImage ? (
-              <Image className="mb-8" data={record.media.responsiveImage} />
+              <Image
+                className="mx-auto mb-8 md:mx-0"
+                data={record.media.responsiveImage}
+              />
             ) : record.media.video ? (
-              <div className="mb-8">
+              <div className="mx-auto mb-8 md:mx-0">
                 <MuxPlayer
                   streamType="on-demand"
                   playbackId={record.media.video.muxPlaybackId}

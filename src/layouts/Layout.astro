@@ -1,5 +1,6 @@
 ---
 import gql from "graphql-tag";
+import Footer from "../components/footer.astro";
 import Header from "../components/header.astro";
 import { SEO } from "../components/seo";
 import { request } from "../lib/datocms/request";
@@ -42,6 +43,8 @@ const {
   <body>
     <Header />
     <slot />
+    <Footer />
+
     <style>
       /* kaushan-script-regular - latin */
       @font-face {
