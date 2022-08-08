@@ -2,6 +2,7 @@
 import gql from "graphql-tag";
 import Blocks from "../components/blocks.astro";
 import { fragment as ArtworksBlockFragment } from "../components/blocks/artworks-block.astro";
+import { fragment as ContentBlockFragment } from "../components/blocks/content-block.astro";
 import { fragment as LatestArtworksBlockFragment } from "../components/blocks/latest-artworks-block.astro";
 import { fragment as LatestPostsBlockFragment } from "../components/blocks/latest-posts-block.astro";
 import { fragment as PostsBlockFragment } from "../components/blocks/posts-block.astro";
@@ -16,6 +17,9 @@ export const fragment = gql`
     slug
     blocks {
       __typename
+      ... on ContentBlockRecord {
+        ...ContentBlock
+      }
       ... on LatestPostsBlockRecord {
         ...LatestPostsBlock
       }
@@ -35,8 +39,9 @@ export const fragment = gql`
   }
 
   ${metaTagFragment}
-  ${ArtworksBlockFragment}
+  ${ContentBlockFragment}
   ${PostsBlockFragment}
+  ${ArtworksBlockFragment}
   ${LatestPostsBlockFragment}
   ${LatestArtworksBlockFragment}
 `;

@@ -21,82 +21,6 @@ export type Scalars = {
   UploadId: any;
 };
 
-export type AltFileField = FileFieldInterface & {
-  __typename?: 'AltFileField';
-  _createdAt: Scalars['DateTime'];
-  _updatedAt: Scalars['DateTime'];
-  alt: Scalars['String'];
-  author?: Maybe<Scalars['String']>;
-  basename: Scalars['String'];
-  blurUpThumb?: Maybe<Scalars['String']>;
-  blurhash?: Maybe<Scalars['String']>;
-  colors: Array<ColorField>;
-  copyright?: Maybe<Scalars['String']>;
-  customData: Scalars['CustomData'];
-  exifInfo: Scalars['CustomData'];
-  filename: Scalars['String'];
-  focalPoint?: Maybe<FocalPoint>;
-  format: Scalars['String'];
-  height?: Maybe<Scalars['IntType']>;
-  id: Scalars['UploadId'];
-  md5: Scalars['String'];
-  mimeType: Scalars['String'];
-  notes?: Maybe<Scalars['String']>;
-  responsiveImage?: Maybe<ResponsiveImage>;
-  size: Scalars['IntType'];
-  smartTags: Array<Scalars['String']>;
-  tags: Array<Scalars['String']>;
-  title?: Maybe<Scalars['String']>;
-  url: Scalars['String'];
-  video?: Maybe<UploadVideoField>;
-  width?: Maybe<Scalars['IntType']>;
-};
-
-
-export type AltFileFieldAltArgs = {
-  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
-  locale?: InputMaybe<SiteLocale>;
-};
-
-
-export type AltFileFieldBlurUpThumbArgs = {
-  imgixParams?: InputMaybe<ImgixParams>;
-  punch?: InputMaybe<Scalars['Float']>;
-  quality?: InputMaybe<Scalars['Int']>;
-  size?: InputMaybe<Scalars['Int']>;
-};
-
-
-export type AltFileFieldCustomDataArgs = {
-  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
-  locale?: InputMaybe<SiteLocale>;
-};
-
-
-export type AltFileFieldFocalPointArgs = {
-  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
-  locale?: InputMaybe<SiteLocale>;
-};
-
-
-export type AltFileFieldResponsiveImageArgs = {
-  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
-  imgixParams?: InputMaybe<ImgixParams>;
-  locale?: InputMaybe<SiteLocale>;
-  sizes?: InputMaybe<Scalars['String']>;
-};
-
-
-export type AltFileFieldTitleArgs = {
-  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
-  locale?: InputMaybe<SiteLocale>;
-};
-
-
-export type AltFileFieldUrlArgs = {
-  imgixParams?: InputMaybe<ImgixParams>;
-};
-
 export type AltTitleFileField = FileFieldInterface & {
   __typename?: 'AltTitleFileField';
   _createdAt: Scalars['DateTime'];
@@ -246,7 +170,7 @@ export type ArtworkRecord = RecordInterface & {
   createdAt: Scalars['DateTime'];
   excerpt: Scalars['String'];
   id: Scalars['ItemId'];
-  image: FileField;
+  image: ImageFileField;
   seo?: Maybe<SeoField>;
   slug: Scalars['String'];
   title: Scalars['String'];
@@ -403,6 +327,67 @@ export type ColorField = {
 export type ColorFilter = {
   /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']>;
+};
+
+/** Block of type Content block (content_block) */
+export type ContentBlockRecord = RecordInterface & {
+  __typename?: 'ContentBlockRecord';
+  _createdAt: Scalars['DateTime'];
+  _firstPublishedAt?: Maybe<Scalars['DateTime']>;
+  _isValid: Scalars['BooleanType'];
+  _modelApiKey: Scalars['String'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']>;
+  _publishedAt?: Maybe<Scalars['DateTime']>;
+  /** SEO meta tags */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']>;
+  _updatedAt: Scalars['DateTime'];
+  backgroundColor?: Maybe<ColorField>;
+  centerText?: Maybe<Scalars['BooleanType']>;
+  columns: Array<ContentColumnRecord>;
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ItemId'];
+  updatedAt: Scalars['DateTime'];
+};
+
+
+/** Block of type Content block (content_block) */
+export type ContentBlockRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+export type ContentColumnModelBodyField = {
+  __typename?: 'ContentColumnModelBodyField';
+  blocks: Array<MediaAssetRecord>;
+  links: Array<Scalars['String']>;
+  value: Scalars['JsonField'];
+};
+
+/** Block of type Content column (content_column) */
+export type ContentColumnRecord = RecordInterface & {
+  __typename?: 'ContentColumnRecord';
+  _createdAt: Scalars['DateTime'];
+  _firstPublishedAt?: Maybe<Scalars['DateTime']>;
+  _isValid: Scalars['BooleanType'];
+  _modelApiKey: Scalars['String'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']>;
+  _publishedAt?: Maybe<Scalars['DateTime']>;
+  /** SEO meta tags */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']>;
+  _updatedAt: Scalars['DateTime'];
+  body?: Maybe<ContentColumnModelBodyField>;
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ItemId'];
+  updatedAt: Scalars['DateTime'];
+};
+
+
+/** Block of type Content column (content_column) */
+export type ContentColumnRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
 };
 
 /** Specifies how to filter by creation datetime */
@@ -594,6 +579,10 @@ export type FileFilter = {
   notIn?: InputMaybe<Array<InputMaybe<Scalars['UploadId']>>>;
 };
 
+export type GlobalModelArtworkBlocksField = ContentBlockRecord | LatestArtworksBlockRecord | LatestPostsBlockRecord;
+
+export type GlobalModelPostBlocksField = LatestArtworksBlockRecord | LatestPostsBlockRecord;
+
 /** Record of type Global (global) */
 export type GlobalRecord = RecordInterface & {
   __typename?: 'GlobalRecord';
@@ -608,12 +597,12 @@ export type GlobalRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']>;
   _updatedAt: Scalars['DateTime'];
-  artworkBlocks: Array<LatestPostsBlockRecord>;
+  artworkBlocks: Array<GlobalModelArtworkBlocksField>;
   artworksPage: PageRecord;
   createdAt: Scalars['DateTime'];
   id: Scalars['ItemId'];
   logo: AltTitleFileField;
-  postBlocks: Array<LatestArtworksBlockRecord>;
+  postBlocks: Array<GlobalModelPostBlocksField>;
   postsPage: PageRecord;
   updatedAt: Scalars['DateTime'];
 };
@@ -631,6 +620,82 @@ export type GlobalSeoField = {
   siteName?: Maybe<Scalars['String']>;
   titleSuffix?: Maybe<Scalars['String']>;
   twitterAccount?: Maybe<Scalars['String']>;
+};
+
+export type ImageFileField = FileFieldInterface & {
+  __typename?: 'ImageFileField';
+  _createdAt: Scalars['DateTime'];
+  _updatedAt: Scalars['DateTime'];
+  alt?: Maybe<Scalars['String']>;
+  author?: Maybe<Scalars['String']>;
+  basename: Scalars['String'];
+  blurUpThumb?: Maybe<Scalars['String']>;
+  blurhash?: Maybe<Scalars['String']>;
+  colors: Array<ColorField>;
+  copyright?: Maybe<Scalars['String']>;
+  customData: Scalars['CustomData'];
+  exifInfo: Scalars['CustomData'];
+  filename: Scalars['String'];
+  focalPoint: FocalPoint;
+  format: Scalars['String'];
+  height: Scalars['IntType'];
+  id: Scalars['UploadId'];
+  md5: Scalars['String'];
+  mimeType: Scalars['String'];
+  notes?: Maybe<Scalars['String']>;
+  responsiveImage: ResponsiveImage;
+  size: Scalars['IntType'];
+  smartTags: Array<Scalars['String']>;
+  tags: Array<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+  url: Scalars['String'];
+  video?: Maybe<UploadVideoField>;
+  width: Scalars['IntType'];
+};
+
+
+export type ImageFileFieldAltArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+export type ImageFileFieldBlurUpThumbArgs = {
+  imgixParams?: InputMaybe<ImgixParams>;
+  punch?: InputMaybe<Scalars['Float']>;
+  quality?: InputMaybe<Scalars['Int']>;
+  size?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type ImageFileFieldCustomDataArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+export type ImageFileFieldFocalPointArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+export type ImageFileFieldResponsiveImageArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  imgixParams?: InputMaybe<ImgixParams>;
+  locale?: InputMaybe<SiteLocale>;
+  sizes?: InputMaybe<Scalars['String']>;
+};
+
+
+export type ImageFileFieldTitleArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+export type ImageFileFieldUrlArgs = {
+  imgixParams?: InputMaybe<ImgixParams>;
 };
 
 export type ImgixParams = {
@@ -2003,34 +2068,6 @@ export type InUseFilter = {
   eq?: InputMaybe<Scalars['BooleanType']>;
 };
 
-/** Block of type Intro block (intro_block) */
-export type IntroBlockRecord = RecordInterface & {
-  __typename?: 'IntroBlockRecord';
-  _createdAt: Scalars['DateTime'];
-  _firstPublishedAt?: Maybe<Scalars['DateTime']>;
-  _isValid: Scalars['BooleanType'];
-  _modelApiKey: Scalars['String'];
-  _publicationScheduledAt?: Maybe<Scalars['DateTime']>;
-  _publishedAt?: Maybe<Scalars['DateTime']>;
-  /** SEO meta tags */
-  _seoMetaTags: Array<Tag>;
-  _status: ItemStatus;
-  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']>;
-  _updatedAt: Scalars['DateTime'];
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ItemId'];
-  image: AltFileField;
-  subtitle?: Maybe<Scalars['String']>;
-  title: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
-};
-
-
-/** Block of type Intro block (intro_block) */
-export type IntroBlockRecord_SeoMetaTagsArgs = {
-  locale?: InputMaybe<SiteLocale>;
-};
-
 /** Specifies how to filter by ID */
 export type ItemIdFilter = {
   /** Search the record with the specified ID */
@@ -2157,7 +2194,7 @@ export type OrientationFilter = {
   neq?: InputMaybe<UploadOrientation>;
 };
 
-export type PageModelBlocksField = ArtworksBlockRecord | IntroBlockRecord | LatestArtworksBlockRecord | LatestPostsBlockRecord | PostsBlockRecord;
+export type PageModelBlocksField = ArtworksBlockRecord | ContentBlockRecord | LatestArtworksBlockRecord | LatestPostsBlockRecord | PostsBlockRecord;
 
 export type PageModelFilter = {
   OR?: InputMaybe<Array<InputMaybe<PageModelFilter>>>;
@@ -2316,7 +2353,7 @@ export type PostRecord = RecordInterface & {
   createdAt: Scalars['DateTime'];
   excerpt: Scalars['String'];
   id: Scalars['ItemId'];
-  image: FileField;
+  image: ImageFileField;
   seo?: Maybe<SeoField>;
   slug: Scalars['String'];
   title: Scalars['String'];

@@ -1,5 +1,6 @@
 ---
 import ArtworksBlock from "./blocks/artworks-block.astro";
+import ContentBlock from "./blocks/content-block.astro";
 import LatestArtworksBlock from "./blocks/latest-artworks-block.astro";
 import LatestPostsBlock from "./blocks/latest-posts-block.astro";
 import PostsBlock from "./blocks/posts-block.astro";
@@ -13,6 +14,8 @@ const { blocks } = Astro.props as BlocksProps;
 
 {blocks.map(({ __typename, ...block }) => {
   switch (__typename) {
+    case "ContentBlockRecord":
+      return <ContentBlock {...block} />;
     case "PostsBlockRecord":
       return <PostsBlock {...block} />;
     case "ArtworksBlockRecord":

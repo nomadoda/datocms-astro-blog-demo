@@ -1,0 +1,63 @@
+---
+import cn from "classnames";
+import gql from "graphql-tag";
+import type { ContentBlockRecord } from "../../lib/datocms/types";
+import { responsiveImageFragment,videoFragment } from "../../lib/fragments";
+import { Body } from "../body";
+import { Container } from "../container";
+import { PageBlock } from "../page-block";
+
+export const fragment = gql`
+  fragment ContentBlock on ContentBlockRecord {
+    id
+    columns {
+      body {
+        value
+        blocks {
+          __typename
+          id
+          media {
+            responsiveImage(
+              imgixParams: { w: 800, h: 600, auto: format }
+            ) {
+              ...ResponsiveImage
+            }
+            video {
+              ...Video
+            }
+          }
+        }
+      }
+    }
+    centerText
+    backgroundColor {
+      hex
+    }
+  }
+  ${responsiveImageFragment}
+  ${videoFragment}
+`;
+
+interface ContentBlockProps extends ContentBlockRecord {}
+
+const { columns, centerText, backgroundColor, ...props } =
+  Astro.props as ContentBlockProps;
+---
+
+<PageBlock
+  className={cn({ "bg-purple-200": !backgroundColor })}
+  style={{ backgroundColor: backgroundColor?.hex }}
+>
+  <Container>
+    <div class:list={["grid gap-8 text-center", { "md:text-start": !centerText, "md:grid-cols-2": columns.length > 1 }]}>
+      {columns.map((column) => {
+        const body = column.body as any;
+        return (
+          <div>
+            <Body client:only="react" body={body} />
+          </div>
+        );
+      })}
+    </div>
+  </Container>
+</PageBlock>

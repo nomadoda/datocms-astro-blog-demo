@@ -1,7 +1,10 @@
 ---
 import gql from "graphql-tag";
 import { Image } from "react-datocms";
+import ArticleTitle from "../components/article-title.astro";
 import Blocks from "../components/blocks.astro";
+import { fragment as ContentBlockFragment } from "../components/blocks/content-block.astro";
+import { fragment as LatestArtworksBlockFragment } from "../components/blocks/latest-artworks-block.astro";
 import { fragment as LatestPostsBlockFragment } from "../components/blocks/latest-posts-block.astro";
 import { Body } from "../components/body";
 import { Container } from "../components/container";
@@ -56,11 +59,22 @@ const query = gql`
     global {
       artworkBlocks {
         __typename
-        ...LatestPostsBlock
+        ... on LatestPostsBlockRecord {
+          ...LatestPostsBlock
+        }
+        ... on LatestArtworksBlockRecord {
+          ...LatestArtworksBlock
+        }
+        ... on ContentBlockRecord {
+          ...ContentBlock
+        }
       }
     }
   }
+
+  ${LatestArtworksBlockFragment}
   ${LatestPostsBlockFragment}
+  ${ContentBlockFragment}
 `;
 
 const {
@@ -79,17 +93,16 @@ const body = artwork.body as any;
 <Layout seo={artwork._seoMetaTags}>
   <Container>
     <article class="flex flex-col items-center">
-      <h1 class="max-w-screen-md mb-8 text-4xl text-center">
-        {artwork.title}
-      </h1>
+      <ArticleTitle title={artwork.title} />
       <Image className="mb-8" lazyLoad={false} data={image} />
       {artwork.body ? (
         <div class="max-w-screen-sm">
           <Body
             client:only="react"
             body={body}
-            postOrArtworkId={artwork.id}
-            postOrArtworkTitle={artwork.title}
+            headingLevelFrom={3}
+            videoId={artwork.id}
+            videoTitle={artwork.title}
           />
         </div>
       ) : null}

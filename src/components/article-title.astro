@@ -1,0 +1,11 @@
+---
+interface ArticleTitleProps {
+  title: string;
+}
+
+const { title } = Astro.props as ArticleTitleProps;
+---
+
+<h2 class="max-w-screen-md mb-8 text-5xl text-center leading-normal">
+  {title}
+</h2>

@@ -1,9 +1,12 @@
 ---
 import gql from "graphql-tag";
 import { Image } from "react-datocms";
+import ArticleTitle from "../components/article-title.astro";
 import Blocks from "../components/blocks.astro";
 import { fragment as LatestArtworksBlockFragment } from "../components/blocks/latest-artworks-block.astro";
+import { fragment as LatestPostsBlockFragment } from "../components/blocks/latest-posts-block.astro";
 import { Body } from "../components/body";
+import { CategoryBadge } from "../components/category-badge";
 import { Container } from "../components/container";
 import { request } from "../lib/datocms/request";
 import type { GlobalRecord, PostRecord } from "../lib/datocms/types";
@@ -23,6 +26,9 @@ export const fragment = gql`
       responsiveImage {
         ...ResponsiveImage
       }
+    }
+    category {
+      ...CategoryBadge
     }
     body {
       value
@@ -49,6 +55,7 @@ export const fragment = gql`
   ${metaTagFragment}
   ${responsiveImageFragment}
   ${videoFragment}
+  ${CategoryBadge.fragment}
 `;
 
 const query = gql`
@@ -56,11 +63,17 @@ const query = gql`
     global {
       postBlocks {
         __typename
-        ...LatestArtworksBlock
+        ... on LatestPostsBlockRecord {
+          ...LatestPostsBlock
+        }
+        ... on LatestArtworksBlockRecord {
+          ...LatestArtworksBlock
+        }
       }
     }
   }
   ${LatestArtworksBlockFragment}
+  ${LatestPostsBlockFragment}
 `;
 
 const {
@@ -79,16 +92,16 @@ const body = post.body as any;
 <Layout seo={post._seoMetaTags}>
   <Container>
     <article class="my-16 flex flex-col items-center">
-      <h1 class="max-w-screen-md mb-8 text-4xl text-center">
-        {post.title}
-      </h1>
+      <ArticleTitle title={post.title} />
       <Image className="mb-8" lazyLoad={false} data={image} />
+      <CategoryBadge className="mb-8" category={post.category} />
       <div class="max-w-screen-sm">
         <Body
           client:only="react"
           body={body}
-          postOrArtworkId={post.id}
-          postOrArtworkTitle={post.title}
+          headingLevelFrom={3}
+          videoId={post.id}
+          videoTitle={post.title}
         />
       </div>
     </article>

@@ -17,18 +17,20 @@ import {
 import type { MediaAssetRecord } from "../lib/datocms/types";
 
 interface BodyProps {
-  postOrArtworkId: string;
-  postOrArtworkTitle: string;
   body: StructuredTextGraphQlResponse<
     MediaAssetRecord & { id: string; __typename: string },
     any
   >;
+  headingLevelFrom?: number;
+  videoId?: string;
+  videoTitle?: string;
 }
 
 export const Body: FC<BodyProps> = ({
   body,
-  postOrArtworkId,
-  postOrArtworkTitle,
+  headingLevelFrom = 2,
+  videoId: postOrArtworkId,
+  videoTitle: postOrArtworkTitle,
 }) => {
   return (
     <StructuredText
@@ -37,14 +39,19 @@ export const Body: FC<BodyProps> = ({
         renderNodeRule(
           isHeading,
           ({ adapter: { renderNode }, node, children, key }) => {
-            const level = Math.max(2, node.level);
+            const level = node.level + headingLevelFrom - 1;
             return renderNode(`h${level}`, {
               key,
               className: cn([
                 "mb-8",
-                { 2: "text-2xl", 3: "text-xl", 4: "text-lg", 5: "text-lg" }[
-                  level
-                ],
+                {
+                  1: "text-3xl",
+                  2: "text-2xl",
+                  3: "text-xl",
+                  4: "text-lg",
+                  5: "text-lg",
+                  6: "text-lg",
+                }[node.level],
               ]),
               children,
             });
@@ -90,12 +97,9 @@ export const Body: FC<BodyProps> = ({
         switch (record.__typename) {
           case "MediaAssetRecord":
             return record.media.responsiveImage ? (
-              <Image
-                className="mx-auto mb-8"
-                data={record.media.responsiveImage}
-              />
+              <Image className="mb-8" data={record.media.responsiveImage} />
             ) : record.media.video ? (
-              <div className="mx-auto mb-8">
+              <div className="mb-8">
                 <MuxPlayer
                   streamType="on-demand"
                   playbackId={record.media.video.muxPlaybackId}
