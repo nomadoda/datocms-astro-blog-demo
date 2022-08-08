@@ -1,4 +1,3 @@
-import MuxPlayer from "@mux/mux-player-react";
 import cn from "classnames";
 import {
   isBlockquote,
@@ -14,7 +13,7 @@ import {
   StructuredText,
   StructuredTextGraphQlResponse,
 } from "react-datocms";
-import type { MediaAssetRecord } from "../lib/datocms/types";
+import type { MediaAssetRecord, UploadVideoField } from "../lib/datocms/types";
 
 interface BodyProps {
   body: StructuredTextGraphQlResponse<
@@ -24,13 +23,13 @@ interface BodyProps {
   headingLevelFrom?: number;
   videoId?: string;
   videoTitle?: string;
+  renderVideo?: (video: UploadVideoField) => any;
 }
 
 export const Body: FC<BodyProps> = ({
   body,
   headingLevelFrom = 2,
-  videoId: postOrArtworkId,
-  videoTitle: postOrArtworkTitle,
+  renderVideo,
 }) => {
   return (
     <StructuredText
@@ -39,7 +38,7 @@ export const Body: FC<BodyProps> = ({
         renderNodeRule(
           isHeading,
           ({ adapter: { renderNode }, node, children, key }) => {
-            const level = node.level + headingLevelFrom - 1;
+            const level: number = node.level + headingLevelFrom - 1;
             return renderNode(`h${level}`, {
               key,
               className: cn([
@@ -99,18 +98,12 @@ export const Body: FC<BodyProps> = ({
             return record.media.responsiveImage ? (
               <Image
                 className="mx-auto mb-8 md:mx-0"
+                lazyLoad={false}
                 data={record.media.responsiveImage}
               />
-            ) : record.media.video ? (
+            ) : record.media.video && renderVideo ? (
               <div className="mx-auto mb-8 md:mx-0">
-                <MuxPlayer
-                  streamType="on-demand"
-                  playbackId={record.media.video.muxPlaybackId}
-                  metadata={{
-                    video_id: postOrArtworkId,
-                    video_title: postOrArtworkTitle,
-                  }}
-                />
+                {renderVideo?.(record.media.video)}
               </div>
             ) : null;
           default:

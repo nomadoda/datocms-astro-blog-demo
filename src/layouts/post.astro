@@ -6,6 +6,7 @@ import Blocks from "../components/blocks.astro";
 import { fragment as LatestArtworksBlockFragment } from "../components/blocks/latest-artworks-block.astro";
 import { fragment as LatestPostsBlockFragment } from "../components/blocks/latest-posts-block.astro";
 import { Body } from "../components/body";
+import { BodyWithVideo } from "../components/body-with-video";
 import { CategoryBadge } from "../components/category-badge";
 import { Container } from "../components/container";
 import { request } from "../lib/datocms/request";
@@ -87,6 +88,7 @@ interface PostProps {
 const { post } = Astro.props as PostProps;
 const image = post.image.responsiveImage!;
 const body = post.body as any;
+const hasVideo = post.body.blocks.some(({ media }) => media?.video);
 ---
 
 <Layout seo={post._seoMetaTags}>
@@ -96,13 +98,17 @@ const body = post.body as any;
       <Image className="mb-8" lazyLoad={false} data={image} />
       <CategoryBadge className="mb-8" category={post.category} />
       <div class="max-w-screen-sm">
-        <Body
-          client:only="react"
-          body={body}
-          headingLevelFrom={3}
-          videoId={post.id}
-          videoTitle={post.title}
-        />
+        {hasVideo ? (
+          <BodyWithVideo
+            client:only="react"
+            body={body}
+            headingLevelFrom={3}
+            videoId={post.id}
+            videoTitle={post.title}
+          />
+        ) : (
+          <Body body={body} headingLevelFrom={3} />
+        )}
       </div>
     </article>
   </Container>

@@ -7,6 +7,7 @@ import { fragment as ContentBlockFragment } from "../components/blocks/content-b
 import { fragment as LatestArtworksBlockFragment } from "../components/blocks/latest-artworks-block.astro";
 import { fragment as LatestPostsBlockFragment } from "../components/blocks/latest-posts-block.astro";
 import { Body } from "../components/body";
+import { BodyWithVideo } from "../components/body-with-video";
 import { Container } from "../components/container";
 import { request } from "../lib/datocms/request";
 import type { ArtworkRecord, GlobalRecord } from "../lib/datocms/types";
@@ -88,6 +89,7 @@ interface ArtworkProps {
 const { artwork } = Astro.props as ArtworkProps;
 const image = artwork.image.responsiveImage!;
 const body = artwork.body as any;
+const hasVideo = artwork.body?.blocks.some(({ media }) => media?.video);
 ---
 
 <Layout seo={artwork._seoMetaTags}>
@@ -97,13 +99,17 @@ const body = artwork.body as any;
       <Image className="mb-8" lazyLoad={false} data={image} />
       {artwork.body ? (
         <div class="max-w-screen-sm">
-          <Body
-            client:only="react"
-            body={body}
-            headingLevelFrom={3}
-            videoId={artwork.id}
-            videoTitle={artwork.title}
-          />
+          {hasVideo ? (
+            <BodyWithVideo
+              client:only="react"
+              body={body}
+              headingLevelFrom={3}
+              videoId={artwork.id}
+              videoTitle={artwork.title}
+            />
+          ) : (
+            <Body body={body} headingLevelFrom={3} />
+          )}
         </div>
       ) : null}
     </article>
