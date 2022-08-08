@@ -4,7 +4,11 @@ import { Image } from "react-datocms";
 import { Body } from "../components/body";
 import { Container } from "../components/container";
 import type { ArtworkRecord } from "../lib/datocms/types";
-import { metaTagFragment, responsiveImageFragment } from "../lib/fragments";
+import {
+  metaTagFragment,
+  responsiveImageFragment,
+  videoFragment,
+} from "../lib/fragments";
 import Layout from "./layout.astro";
 
 export const fragment = gql`
@@ -21,14 +25,15 @@ export const fragment = gql`
       value
       blocks {
         __typename
-        ... on ImageRecord {
-          id
-          image {
-            responsiveImage(
-              imgixParams: { fit: crop, w: 800, h: 400, auto: format }
-            ) {
-              ...ResponsiveImage
-            }
+        id
+        media {
+          responsiveImage(
+            imgixParams: { fit: crop, w: 800, h: 400, auto: format }
+          ) {
+            ...ResponsiveImage
+          }
+          video {
+            ...Video
           }
         }
       }
@@ -40,6 +45,7 @@ export const fragment = gql`
 
   ${metaTagFragment}
   ${responsiveImageFragment}
+  ${videoFragment}
 `;
 
 interface ArtworkProps {
@@ -48,6 +54,7 @@ interface ArtworkProps {
 
 const { artwork } = Astro.props as ArtworkProps;
 const image = artwork.image.responsiveImage!;
+const body = artwork.body as any;
 ---
 
 <Layout seo={artwork._seoMetaTags}>
@@ -59,7 +66,12 @@ const image = artwork.image.responsiveImage!;
       <Image className="mb-8" lazyLoad={false} data={image} />
       {artwork.body ? (
         <div class="max-w-screen-sm">
-          <Body body={artwork.body} />
+          <Body
+            client:only="react"
+            body={body}
+            postOrArtworkId={artwork.id}
+            postOrArtworkTitle={artwork.title}
+          />
         </div>
       ) : null}
     </article>

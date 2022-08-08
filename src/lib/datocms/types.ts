@@ -175,7 +175,7 @@ export type AltTitleFileFieldUrlArgs = {
 
 export type ArtworkModelBodyField = {
   __typename?: 'ArtworkModelBodyField';
-  blocks: Array<Scalars['String']>;
+  blocks: Array<MediaAssetRecord>;
   links: Array<Scalars['String']>;
   value: Scalars['JsonField'];
 };
@@ -629,32 +629,6 @@ export type GlobalSeoField = {
   siteName?: Maybe<Scalars['String']>;
   titleSuffix?: Maybe<Scalars['String']>;
   twitterAccount?: Maybe<Scalars['String']>;
-};
-
-/** Block of type Image (image) */
-export type ImageRecord = RecordInterface & {
-  __typename?: 'ImageRecord';
-  _createdAt: Scalars['DateTime'];
-  _firstPublishedAt?: Maybe<Scalars['DateTime']>;
-  _isValid: Scalars['BooleanType'];
-  _modelApiKey: Scalars['String'];
-  _publicationScheduledAt?: Maybe<Scalars['DateTime']>;
-  _publishedAt?: Maybe<Scalars['DateTime']>;
-  /** SEO meta tags */
-  _seoMetaTags: Array<Tag>;
-  _status: ItemStatus;
-  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']>;
-  _updatedAt: Scalars['DateTime'];
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ItemId'];
-  image: FileField;
-  updatedAt: Scalars['DateTime'];
-};
-
-
-/** Block of type Image (image) */
-export type ImageRecord_SeoMetaTagsArgs = {
-  locale?: InputMaybe<SiteLocale>;
 };
 
 export type ImgixParams = {
@@ -2141,6 +2115,32 @@ export type LinkFilter = {
   notIn?: InputMaybe<Array<InputMaybe<Scalars['ItemId']>>>;
 };
 
+/** Block of type Media (media_asset) */
+export type MediaAssetRecord = RecordInterface & {
+  __typename?: 'MediaAssetRecord';
+  _createdAt: Scalars['DateTime'];
+  _firstPublishedAt?: Maybe<Scalars['DateTime']>;
+  _isValid: Scalars['BooleanType'];
+  _modelApiKey: Scalars['String'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']>;
+  _publishedAt?: Maybe<Scalars['DateTime']>;
+  /** SEO meta tags */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']>;
+  _updatedAt: Scalars['DateTime'];
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ItemId'];
+  media: FileField;
+  updatedAt: Scalars['DateTime'];
+};
+
+
+/** Block of type Media (media_asset) */
+export type MediaAssetRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
 export enum MuxThumbnailFormatType {
   Gif = 'gif',
   Jpg = 'jpg',
@@ -2239,11 +2239,9 @@ export type PageRecordExcerptArgs = {
   markdown?: InputMaybe<Scalars['Boolean']>;
 };
 
-export type PostModelBodyBlocksField = ImageRecord | VideoRecord;
-
 export type PostModelBodyField = {
   __typename?: 'PostModelBodyField';
-  blocks: Array<PostModelBodyBlocksField>;
+  blocks: Array<MediaAssetRecord>;
   links: Array<Scalars['String']>;
   value: Scalars['JsonField'];
 };
@@ -3102,48 +3100,11 @@ export type UploadWidthFilter = {
   neq?: InputMaybe<Scalars['IntType']>;
 };
 
-export type VideoField = {
-  __typename?: 'VideoField';
-  height: Scalars['IntType'];
-  provider: Scalars['String'];
-  providerUid: Scalars['String'];
-  thumbnailUrl: Scalars['String'];
-  title: Scalars['String'];
-  url: Scalars['String'];
-  width: Scalars['IntType'];
-};
-
 export enum VideoMp4Res {
   High = 'high',
   Low = 'low',
   Medium = 'medium'
 }
-
-/** Block of type Video (video) */
-export type VideoRecord = RecordInterface & {
-  __typename?: 'VideoRecord';
-  _createdAt: Scalars['DateTime'];
-  _firstPublishedAt?: Maybe<Scalars['DateTime']>;
-  _isValid: Scalars['BooleanType'];
-  _modelApiKey: Scalars['String'];
-  _publicationScheduledAt?: Maybe<Scalars['DateTime']>;
-  _publishedAt?: Maybe<Scalars['DateTime']>;
-  /** SEO meta tags */
-  _seoMetaTags: Array<Tag>;
-  _status: ItemStatus;
-  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']>;
-  _updatedAt: Scalars['DateTime'];
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ItemId'];
-  updatedAt: Scalars['DateTime'];
-  video: VideoField;
-};
-
-
-/** Block of type Video (video) */
-export type VideoRecord_SeoMetaTagsArgs = {
-  locale?: InputMaybe<SiteLocale>;
-};
 
 export type FocalPoint = {
   __typename?: 'focalPoint';

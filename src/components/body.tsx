@@ -1,3 +1,4 @@
+import MuxPlayer from "@mux/mux-player-react";
 import cn from "classnames";
 import {
   isBlockquote,
@@ -13,12 +14,22 @@ import {
   StructuredText,
   StructuredTextGraphQlResponse,
 } from "react-datocms";
+import type { MediaAssetRecord } from "../lib/datocms/types";
 
 interface BodyProps {
-  body: StructuredTextGraphQlResponse<any, any>;
+  postOrArtworkId: string;
+  postOrArtworkTitle: string;
+  body: StructuredTextGraphQlResponse<
+    MediaAssetRecord & { id: string; __typename: string },
+    any
+  >;
 }
 
-export const Body: FC<BodyProps> = ({ body, ...props }) => {
+export const Body: FC<BodyProps> = ({
+  body,
+  postOrArtworkId,
+  postOrArtworkTitle,
+}) => {
   return (
     <StructuredText
       data={body}
@@ -77,14 +88,24 @@ export const Body: FC<BodyProps> = ({ body, ...props }) => {
       ]}
       renderBlock={({ record }) => {
         switch (record.__typename) {
-          case "ImageRecord":
-            return (
+          case "MediaAssetRecord":
+            return record.media.responsiveImage ? (
               <Image
                 className="mx-auto mb-8"
-                lazyLoad={false}
-                data={record.image.responsiveImage}
+                data={record.media.responsiveImage}
               />
-            );
+            ) : record.media.video ? (
+              <div className="mx-auto mb-8">
+                <MuxPlayer
+                  streamType="on-demand"
+                  playbackId={record.media.video.muxPlaybackId}
+                  metadata={{
+                    video_id: postOrArtworkId,
+                    video_title: postOrArtworkTitle,
+                  }}
+                />
+              </div>
+            ) : null;
           default:
             return null;
         }

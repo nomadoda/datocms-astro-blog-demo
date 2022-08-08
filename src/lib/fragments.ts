@@ -33,3 +33,9 @@ export const metaTagFragment = gql`
     tag
   }
 `;
+
+export const videoFragment = gql`
+  fragment Video on UploadVideoField {
+    muxPlaybackId
+  }
+`;
